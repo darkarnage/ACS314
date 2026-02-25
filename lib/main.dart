@@ -3,34 +3,38 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.amber,
           title: Text(
             "Login Screen",
             style: TextStyle(
+              color: Colors.white,
               fontSize: 30,
               fontWeight: FontWeight.w200,
-              color: Colors.white,
             ),
           ),
           centerTitle: true,
         ),
         body: Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset("assets/profilepic.png"),
             Text(
               "Login Screen",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w200),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
             ),
+            SizedBox(height: 30),
             Text("Enter Username"),
             TextField(),
-            Text("Enter Password"),
+            SizedBox(height: 30),
+            Text("Enter passord"),
             TextField(),
             MaterialButton(
               onPressed: () {},
-              color: Colors.amber,
-              child: Text("Login", style: TextStyle(color: Colors.white)),
+              color: Colors.amberAccent,
+              child: Text("Login"),
             ),
           ],
         ),
