@@ -1,121 +1,154 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/configs/colors.dart';
 
 void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Colors.white,
-        //   title: Text(
-        //     "Login Screen",
-        //     style: TextStyle(
-        //       color: Colors.white,
-        //       fontSize: 30,
-        //       fontWeight: FontWeight.w200,
-        //     ),
-        //   ),
-        //   centerTitle: true,
-        // ),
+        backgroundColor: const Color.fromARGB(61, 74, 82, 73),
+        appBar: AppBar(
+          title: Text(
+            'Sign Up',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 30,
+              fontWeight: FontWeight.w200,
+            ),
+          ),
+          centerTitle: true,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(15.0),
           child: SingleChildScrollView(
             child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
-              // crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset("assets/logo.jpg", height: 200, width: 200),
-                Text(
-                  "Login Screen",
+                Image.asset("assets/Jumia-Logo.jpg", height: 200, width: 200),
+                const SizedBox(height: 20),
+                const Text(
+                  "Sign Up",
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+                    children: const [
                       Text(
                         "Enter Username",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 10),
                 TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    hintText: "Use email or phone number",
-                    prefixIcon: Icon(Icons.person),
+                    hintText: "Your Username",
+                    prefixIcon: const Icon(Icons.person),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+                    children: const [
                       Text(
-                        "Enter password",
+                        "Enter Email",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    hintText: "Pin or Password",
-                    prefixIcon: Icon(Icons.person),
-                    suffixIcon: Icon(Icons.visibility_off),
+                    hintText: "Your Email",
+                    prefixIcon: const Icon(Icons.email),
                   ),
                 ),
-                // MaterialButton(
-                //   onPressed: () {},
-                //   color: Colors.amberAccent,
-                //   child: Text("Login"),
-                // ),
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Enter Password",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    hintText: "Your Password",
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: const Icon(Icons.visibility_off),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Confirm Password",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    hintText: "Confirm Your Password",
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: const Icon(Icons.visibility_off),
+                  ),
+                ),
+                const SizedBox(height: 40),
                 Container(
                   height: 50,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 238, 142, 8),
+                    color: const Color.fromARGB(73, 145, 255, 0),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  child: const Text(
+                    "Sign Up",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  child: Row(
-                    children: [
-                      Text("Don't have an account?"),
-                      SizedBox(width: 5),
-                      Text("Signup", style: TextStyle(color: Colors.amber)),
-                      Spacer(),
-                      Text("Forgot password?"),
-                      SizedBox(width: 5),
-                      Text(
-                        "Reset password",
-                        style: TextStyle(color: Colors.amber),
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
