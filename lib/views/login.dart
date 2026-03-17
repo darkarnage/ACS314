@@ -52,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
+              SizedBox(height: 10),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -88,6 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   suffixIcon: Icon(Icons.visibility_off),
                 ),
               ),
+              SizedBox(height: 30),
               // MaterialButton(
               //   onPressed: () {},
               //   color: Colors.amberAccent,
