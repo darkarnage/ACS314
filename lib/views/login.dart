@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
+import 'package:flutter_application_1/controllers/logincontroller.dart';
+import 'package:get/get.dart';
+
+LoginController loginController = Get.put(LoginController());
+TextEditingController usernameController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
             //mainAxisAlignment: MainAxisAlignment.center,
             // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset("assets/logo.jpg", height: 200, width: 200),
+              Image.asset("assets/Jumia-Logo.jpg", height: 200, width: 200),
               Text(
                 "Login Screen",
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
@@ -54,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 10),
               TextField(
+                controller: usernameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -79,14 +85,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: 10),
-              TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+              Obx(
+                () => TextField(
+                  obscureText: !loginController.isPasswordVisible.value,
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    hintText: "Pin or Password",
+                    prefixIcon: Icon(Icons.person),
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        loginController.togglePassword();
+                      },
+                      child: Icon(
+                        loginController.isPasswordVisible.value
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                    ),
                   ),
-                  hintText: "Pin or Password",
-                  prefixIcon: Icon(Icons.person),
-                  suffixIcon: Icon(Icons.visibility_off),
                 ),
               ),
               SizedBox(height: 30),
@@ -109,7 +128,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 onTap: () {
-                  Get.offAndToNamed("/homescreen");
+                  bool success = loginController.login(
+                    usernameController.text,
+                    passwordController.text,
+                  );
+                  if (success) {
+                    Get.offAndToNamed("/homescreen");
+                  } else {
+                    Get.snackbar(
+                      "Login Failed",
+                      "Invalid username or password",
+                    );
+                  }
                 },
               ),
               Padding(
