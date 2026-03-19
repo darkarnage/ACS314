@@ -1,9 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/Dashboard.dart';
-import 'package:flutter_application_1/views/CategoryScreen.dart';
 import 'package:flutter_application_1/views/ListScreen.dart';
 import 'package:flutter_application_1/views/ProfileScreen.dart';
+import 'package:flutter_application_1/views/categoryscreen.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -17,7 +17,7 @@ class _HomescreenState extends State<Homescreen> {
 
   final List<Widget> _pages = [
     DashboardScreen(),
-    CategoryScreen(),
+    Categoryscreen(),
     ListScreen(),
     ProfileScreen(),
   ];
@@ -25,7 +25,7 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Recipe App"), centerTitle: true),
+      appBar: AppBar(title: Text("Health Log"), centerTitle: true),
 
       body: _pages[_pageIndex],
 
