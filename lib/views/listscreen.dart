@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
             ),
             const SizedBox(height: 12),
 
-            ...insightCards.map((card) => _InsightCard(card: card)).toList(),
+            ...insightCards.map((card) => _InsightCard(card: card)),
             const SizedBox(height: 24),
 
             const Text(

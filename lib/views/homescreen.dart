@@ -25,8 +25,7 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Health Log"), centerTitle: true),
-
+      ///appBar: AppBar(title: Text("Health Log"), centerTitle: true),
       body: _pages[_pageIndex],
 
       bottomNavigationBar: CurvedNavigationBar(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -84,7 +83,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Mood
             const Text(
               "Mood",
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
@@ -127,7 +125,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Notes
             const Text(
               "Notes",
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
@@ -151,7 +148,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Info tip card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -173,7 +169,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Save Entry button
             SizedBox(
               width: double.infinity,
               height: 54,

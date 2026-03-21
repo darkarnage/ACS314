@@ -75,7 +75,7 @@ class Categoryscreen extends StatelessWidget {
                 ),
               ),
 
-              ...entry.value.map((log) => _LogCard(log: log)).toList(),
+              ...entry.value.map((log) => _LogCard(log: log)),
             ],
           );
         }).toList(),
