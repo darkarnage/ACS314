@@ -25,11 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
-                    const Icon(Icons.water_drop, color: Colors.blue, size: 28),
-                    const SizedBox(width: 8),
-                    const Text(
+                    Icon(Icons.water_drop, color: Colors.blue, size: 28),
+                    SizedBox(width: 8),
+                    Text(
                       "HealthLog",
                       style: TextStyle(
                         fontSize: 20,
@@ -50,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Column(
                     children: [
+                      // Shield icon
                       Container(
                         width: 64,
                         height: 64,
@@ -65,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
 
+                      // Welcome text
                       const Text(
                         "Welcome back",
                         style: TextStyle(
@@ -97,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextField(
                         controller: usernameController,
                         decoration: InputDecoration(
-                          hintText: "Pin or Password",
+                          hintText: "name@example.com",
                           hintStyle: const TextStyle(color: Colors.grey),
                           prefixIcon: const Icon(
                             Icons.email_outlined,
@@ -147,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: !loginController.isPasswordVisible.value,
                           controller: passwordController,
                           decoration: InputDecoration(
-                            hintText: "••••••••",
+                            hintText: "Pin or Password",
                             hintStyle: const TextStyle(color: Colors.grey),
                             prefixIcon: const Icon(
                               Icons.lock_outline,
@@ -179,36 +181,55 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      GestureDetector(
-                        onTap: () {
-                          bool success = loginController.login(
-                            usernameController.text,
-                            passwordController.text,
-                          );
-                          if (success) {
-                            Get.offAndToNamed("/homescreen");
-                          } else {
-                            Get.snackbar(
-                              "Login Failed",
-                              "Invalid username or password",
-                            );
-                          }
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          height: 52,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.blue[100],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 16,
+                      Obx(
+                        () => GestureDetector(
+                          onTap: loginController.isLoading.value
+                              ? null
+                              : () async {
+                                  if (usernameController.text.isEmpty ||
+                                      passwordController.text.isEmpty) {
+                                    Get.snackbar(
+                                      "Error",
+                                      "Please enter both email and password",
+                                      backgroundColor: Colors.red[100],
+                                    );
+                                    return;
+                                  }
+                                  bool success = await loginController.login(
+                                    usernameController.text,
+                                    passwordController.text,
+                                  );
+
+                                  if (success) {
+                                    Get.offAndToNamed("/homescreen");
+                                  } else {
+                                    Get.snackbar(
+                                      "Login Failed",
+                                      "Invalid email or password",
+                                      backgroundColor: Colors.red[100],
+                                    );
+                                  }
+                                },
+                          child: Container(
+                            width: double.infinity,
+                            height: 52,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.blue[100],
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                            child: loginController.isLoading.value
+                                ? const CircularProgressIndicator(
+                                    color: Colors.blue,
+                                  )
+                                : const Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 16,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),
@@ -238,16 +259,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.shield_outlined,
                       color: Colors.blueGrey,
                       size: 16,
                     ),
-                    const SizedBox(width: 4),
-                    const Text(
+                    SizedBox(width: 4),
+                    Text(
                       "SECURE ENCRYPTION",
                       style: TextStyle(
                         color: Colors.blueGrey,
@@ -255,14 +276,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         letterSpacing: 1,
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    const Icon(
-                      Icons.info_outline,
-                      color: Colors.blueGrey,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    const Text(
+                    SizedBox(width: 20),
+                    Icon(Icons.info_outline, color: Colors.blueGrey, size: 16),
+                    SizedBox(width: 4),
+                    Text(
                       "PRIVACY FIRST",
                       style: TextStyle(
                         color: Colors.blueGrey,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,6 +17,71 @@ class _SignUpScreenState extends State<SignupScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
+  bool isLoading = false;
+
+  final String baseUrl = "http://localhost/Healthlog";
+
+  Future<void> registerUser() async {
+    if (fullNameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Please fill in all fields",
+        backgroundColor: Colors.red[100],
+      );
+      return;
+    }
+
+    if (passwordController.text != confirmPasswordController.text) {
+      Get.snackbar(
+        "Error",
+        "Passwords do not match",
+        backgroundColor: Colors.red[100],
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/register.php"),
+        body: {
+          "full_name": fullNameController.text,
+          "email": emailController.text,
+          "password": passwordController.text,
+        },
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (data['status'] == 'success') {
+        Get.snackbar(
+          "Success",
+          "Account created successfully",
+          backgroundColor: Colors.green[100],
+        );
+        Get.offAndToNamed("/login");
+      } else {
+        Get.snackbar(
+          "Error",
+          data['message'],
+          backgroundColor: Colors.red[100],
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Could not connect to server",
+        backgroundColor: Colors.red[100],
+      );
+    }
+
+    setState(() => isLoading = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,8 +92,8 @@ class _SignUpScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.water_drop, color: Colors.blue, size: 28),
                   SizedBox(width: 8),
                   Text(
@@ -198,10 +265,7 @@ class _SignUpScreenState extends State<SignupScreen> {
                     const SizedBox(height: 24),
 
                     GestureDetector(
-                      onTap: () {
-                        // signup logic will go here later
-                        Get.offAndToNamed("/homescreen");
-                      },
+                      onTap: isLoading ? null : registerUser,
                       child: Container(
                         width: double.infinity,
                         height: 52,
@@ -210,14 +274,18 @@ class _SignUpScreenState extends State<SignupScreen> {
                           color: Colors.blue[100],
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          "Create Account",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                          ),
-                        ),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.blue,
+                              )
+                            : const Text(
+                                "Create Account",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                ),
+                              ),
                       ),
                     ),
                   ],
@@ -257,10 +325,10 @@ class _SignUpScreenState extends State<SignupScreen> {
                 ),
               ),
               const SizedBox(height: 4),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "TERMS OF SERVICE",
                     style: TextStyle(
                       color: Colors.blueGrey,
@@ -269,11 +337,11 @@ class _SignUpScreenState extends State<SignupScreen> {
                       letterSpacing: 0.8,
                     ),
                   ),
-                  const Text(
+                  Text(
                     "  &  ",
                     style: TextStyle(color: Colors.blueGrey, fontSize: 10),
                   ),
-                  const Text(
+                  Text(
                     "PRIVACY POLICY",
                     style: TextStyle(
                       color: Colors.blueGrey,
