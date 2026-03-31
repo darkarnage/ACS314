@@ -6,7 +6,7 @@ class LoginController extends GetxController {
   var isPasswordVisible = false.obs;
   var isLoading = false.obs;
 
-  final String baseUrl = "http://localhost/Healthlog";
+  final String baseUrl = "http://localhost/healthlog";
 
   togglePassword() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -16,22 +16,23 @@ class LoginController extends GetxController {
     isLoading.value = true;
 
     try {
+      print("Attempting login for: $email");
+
       final response = await http.post(
         Uri.parse("$baseUrl/login.php"),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: {"email": email, "password": password},
       );
+
+      print("Status code: ${response.statusCode}");
+      print("Response: ${response.body}");
 
       final data = jsonDecode(response.body);
 
       if (data['status'] == 'success') {
-        // Save user details so other screens can use them
-        Get.put(
-          UserSession()
-            ..userId = data['user_id'].toString()
-            ..fullName = data['full_name']
-            ..email = data['email'],
-        );
-
         isLoading.value = false;
         return true;
       } else {
@@ -39,15 +40,9 @@ class LoginController extends GetxController {
         return false;
       }
     } catch (e) {
+      print("Login error: $e");
       isLoading.value = false;
       return false;
     }
   }
-}
-
-// Stores logged in user details for use across the app
-class UserSession extends GetxController {
-  String userId = '';
-  String fullName = '';
-  String email = '';
 }
