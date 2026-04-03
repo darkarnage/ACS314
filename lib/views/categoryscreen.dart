@@ -1,38 +1,125 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/logincontroller.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class Categoryscreen extends StatelessWidget {
+class Categoryscreen extends StatefulWidget {
   const Categoryscreen({super.key});
 
   @override
+  State<Categoryscreen> createState() => _CategoryscreenState();
+}
+
+class _CategoryscreenState extends State<Categoryscreen> {
+  final String baseUrl = "http://localhost/healthlog";
+  bool isLoading = true;
+  List<Map<String, dynamic>> logs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLogs();
+  }
+
+  Future<void> fetchLogs() async {
+    setState(() => isLoading = true);
+
+    try {
+      final LoginController controller = Get.find<LoginController>();
+      final String userId = controller.loggedInUserId.value;
+
+      print("Fetching logs for user ID: $userId");
+
+      final response = await http.post(
+        Uri.parse("$baseUrl/get_logs.php"),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: {"user_id": userId},
+      );
+
+      print("Logs response: ${response.body}");
+      final data = jsonDecode(response.body);
+
+      if (data['status'] == 'success') {
+        setState(() {
+          logs = List<Map<String, dynamic>>.from(data['logs']);
+        });
+      }
+    } catch (e) {
+      print("Error fetching logs: $e");
+    }
+
+    setState(() => isLoading = false);
+  }
+
+  // Groups logs by month e.g. "OCTOBER 2024"
+  Map<String, List<Map<String, dynamic>>> groupLogsByMonth() {
+    Map<String, List<Map<String, dynamic>>> grouped = {};
+
+    for (var log in logs) {
+      final date = DateTime.parse(log['date_logged']);
+      final monthYear = "${_monthName(date.month).toUpperCase()} ${date.year}";
+
+      if (!grouped.containsKey(monthYear)) {
+        grouped[monthYear] = [];
+      }
+      grouped[monthYear]!.add(log);
+    }
+
+    return grouped;
+  }
+
+  String _monthName(int month) {
+    const months = [
+      '',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months[month];
+  }
+
+  String _shortMonth(int month) {
+    const months = [
+      '',
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
+    return months[month];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Dummy data grouped by month
-    final Map<String, List<Map<String, String>>> groupedLogs = {
-      "OCTOBER 2023": [
-        {"day": "12", "month": "OCT", "mood": "Tired", "symptom": "Fever"},
-        {"day": "11", "month": "OCT", "mood": "Energetic", "symptom": "None"},
-        {"day": "10", "month": "OCT", "mood": "Relaxed", "symptom": "Headache"},
-      ],
-      "SEPTEMBER 2023": [
-        {"day": "30", "month": "SEP", "mood": "Anxious", "symptom": "Insomnia"},
-      ],
-    };
+    final groupedLogs = groupLogsByMonth();
 
     return Scaffold(
       backgroundColor: const Color(0xFFEFF2F7),
       appBar: AppBar(
         backgroundColor: const Color(0xFFEFF2F7),
         elevation: 0,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: const Icon(Icons.arrow_back, color: Colors.black),
-          ),
-        ),
+        automaticallyImplyLeading: false,
         title: const Text(
           "Entry History",
           style: TextStyle(
@@ -50,49 +137,90 @@ class Categoryscreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(50),
             ),
             child: IconButton(
-              icon: const Icon(Icons.calendar_month, color: Colors.black),
-              onPressed: () {},
+              icon: const Icon(Icons.refresh, color: Colors.black),
+              onPressed: fetchLogs,
             ),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        children: groupedLogs.entries.map((entry) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 12),
-                child: Text(
-                  entry.key,
-                  style: const TextStyle(
-                    color: Colors.blueGrey,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                    letterSpacing: 1.2,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : logs.isEmpty
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.history, size: 60, color: Colors.blueGrey),
+                  SizedBox(height: 16),
+                  Text(
+                    "No entries yet",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.blueGrey,
+                    ),
                   ),
-                ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Go to Dashboard and save your first entry",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
               ),
-
-              ...entry.value.map((log) => _LogCard(log: log)),
-            ],
-          );
-        }).toList(),
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        onPressed: () {},
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+            )
+          : RefreshIndicator(
+              onRefresh: fetchLogs,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                children: groupedLogs.entries.map((entry) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, bottom: 12),
+                        child: Text(
+                          entry.key,
+                          style: const TextStyle(
+                            color: Colors.blueGrey,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                      ...entry.value.map((log) {
+                        final date = DateTime.parse(log['date_logged']);
+                        return _LogCard(
+                          day: date.day.toString(),
+                          month: _shortMonth(date.month),
+                          mood: log['mood'] ?? 'N/A',
+                          symptom: log['symptoms'] ?? 'None',
+                        );
+                      }),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
     );
   }
 }
 
 class _LogCard extends StatelessWidget {
-  final Map<String, String> log;
-  const _LogCard({required this.log});
+  final String day;
+  final String month;
+  final String mood;
+  final String symptom;
+
+  const _LogCard({
+    required this.day,
+    required this.month,
+    required this.mood,
+    required this.symptom,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +233,7 @@ class _LogCard extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Date box
           Container(
             width: 52,
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -115,7 +244,7 @@ class _LogCard extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  log['month']!,
+                  month,
                   style: const TextStyle(
                     color: Colors.blue,
                     fontSize: 11,
@@ -123,7 +252,7 @@ class _LogCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  log['day']!,
+                  day,
                   style: const TextStyle(
                     color: Colors.blue,
                     fontSize: 22,
@@ -135,6 +264,7 @@ class _LogCard extends StatelessWidget {
           ),
           const SizedBox(width: 16),
 
+          // Mood and symptom
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +288,7 @@ class _LogCard extends StatelessWidget {
                             text: "Mood: ",
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          TextSpan(text: log['mood']),
+                          TextSpan(text: mood.isEmpty ? 'N/A' : mood),
                         ],
                       ),
                     ),
@@ -168,10 +298,10 @@ class _LogCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      log['symptom'] == 'None'
+                      symptom.isEmpty || symptom == 'None'
                           ? Icons.check_circle
                           : Icons.warning_amber_rounded,
-                      color: log['symptom'] == 'None'
+                      color: symptom.isEmpty || symptom == 'None'
                           ? Colors.green
                           : Colors.orange,
                       size: 18,
@@ -188,7 +318,7 @@ class _LogCard extends StatelessWidget {
                             text: "Symptoms: ",
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          TextSpan(text: log['symptom']),
+                          TextSpan(text: symptom.isEmpty ? 'None' : symptom),
                         ],
                       ),
                     ),

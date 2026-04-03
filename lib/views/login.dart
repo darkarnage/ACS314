@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/logincontroller.dart';
 import 'package:get/get.dart';
 
-final LoginController loginController = Get.put(LoginController());
+final LoginController loginController = Get.find<LoginController>();
 final TextEditingController usernameController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/logincontroller.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -11,11 +12,17 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    // reads login user info from controller
+    final LoginController controller = Get.find<LoginController>();
+    final String displayName = controller.loggedInName.value;
+    final String displayEmail = controller.loggedInEmail.value;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: const Text(
           "My Profile",
           style: TextStyle(
@@ -59,18 +66,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
-              "Jane Doe",
-              style: TextStyle(
+
+            Text(
+              displayName.isEmpty ? "User" : displayName,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
                 color: Colors.black,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              "jane@example.com",
-              style: TextStyle(fontSize: 14, color: Colors.blueGrey),
+            Text(
+              displayEmail.isEmpty ? "No email" : displayEmail,
+              style: const TextStyle(fontSize: 14, color: Colors.blueGrey),
             ),
             const SizedBox(height: 32),
 
@@ -98,7 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             GestureDetector(
               onTap: () {
-                Get.offAllNamed('/login');
+                Get.find<LoginController>().logout();
+                Get.offAllNamed('/');
               },
               child: Container(
                 width: double.infinity,

@@ -18,28 +18,62 @@ class _SignUpScreenState extends State<SignupScreen> {
       TextEditingController();
 
   bool isLoading = false;
+  final String baseUrl = "http://localhost/healthlog";
 
-  final String baseUrl = "http://localhost/Healthlog";
+  String? validateFullName(String value) {
+    if (value.isEmpty) return "Full name is required";
+    if (value.length < 3) return "Name must be at least 3 characters";
+    // Only letters and spaces allowed
+    if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(value)) {
+      return "Name can only contain letters and spaces";
+    }
+    return null;
+  }
+
+  String? validateEmail(String value) {
+    if (value.isEmpty) return "Email is required";
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+      return "Enter a valid email address";
+    }
+    return null;
+  }
+
+  String? validatePassword(String value) {
+    if (value.isEmpty) return "Password is required";
+    if (value.length < 8) return "Password must be at least 8 characters";
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return "Password must contain at least one number";
+    }
+    return null;
+  }
+
+  String? validateConfirmPassword(String value) {
+    if (value.isEmpty) return "Please confirm your password";
+    if (value != passwordController.text) return "Passwords do not match";
+    return null;
+  }
+
+  String? fullNameError;
+  String? emailError;
+  String? passwordError;
+  String? confirmPasswordError;
 
   Future<void> registerUser() async {
-    if (fullNameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        passwordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Please fill in all fields",
-        backgroundColor: Colors.red[100],
+    // Run all validations
+    setState(() {
+      fullNameError = validateFullName(fullNameController.text.trim());
+      emailError = validateEmail(emailController.text.trim());
+      passwordError = validatePassword(passwordController.text);
+      confirmPasswordError = validateConfirmPassword(
+        confirmPasswordController.text,
       );
-      return;
-    }
+    });
 
-    if (passwordController.text != confirmPasswordController.text) {
-      Get.snackbar(
-        "Error",
-        "Passwords do not match",
-        backgroundColor: Colors.red[100],
-      );
+    // Stop if any error exists
+    if (fullNameError != null ||
+        emailError != null ||
+        passwordError != null ||
+        confirmPasswordError != null) {
       return;
     }
 
@@ -48,9 +82,13 @@ class _SignUpScreenState extends State<SignupScreen> {
     try {
       final response = await http.post(
         Uri.parse("$baseUrl/register.php"),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: {
-          "full_name": fullNameController.text,
-          "email": emailController.text,
+          "full_name": fullNameController.text.trim(),
+          "email": emailController.text.trim(),
           "password": passwordController.text,
         },
       );
@@ -63,7 +101,7 @@ class _SignUpScreenState extends State<SignupScreen> {
           "Account created successfully",
           backgroundColor: Colors.green[100],
         );
-        Get.offAndToNamed("/login");
+        Get.offAndToNamed("/");
       } else {
         Get.snackbar(
           "Error",
@@ -150,6 +188,11 @@ class _SignUpScreenState extends State<SignupScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: fullNameController,
+                      onChanged: (_) {
+                        if (fullNameError != null) {
+                          setState(() => fullNameError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: "John Doe",
                         hintStyle: const TextStyle(color: Colors.grey),
@@ -157,6 +200,7 @@ class _SignUpScreenState extends State<SignupScreen> {
                           Icons.person_outline,
                           color: Colors.grey,
                         ),
+                        errorText: fullNameError,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
@@ -164,6 +208,10 @@ class _SignUpScreenState extends State<SignupScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
@@ -181,6 +229,11 @@ class _SignUpScreenState extends State<SignupScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: emailController,
+                      onChanged: (_) {
+                        if (emailError != null) {
+                          setState(() => emailError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: "name@example.com",
                         hintStyle: const TextStyle(color: Colors.grey),
@@ -188,6 +241,7 @@ class _SignUpScreenState extends State<SignupScreen> {
                           Icons.email_outlined,
                           color: Colors.grey,
                         ),
+                        errorText: emailError,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
@@ -195,6 +249,10 @@ class _SignUpScreenState extends State<SignupScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
@@ -213,6 +271,11 @@ class _SignUpScreenState extends State<SignupScreen> {
                     TextField(
                       controller: passwordController,
                       obscureText: true,
+                      onChanged: (_) {
+                        if (passwordError != null) {
+                          setState(() => passwordError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: "Pin or Password",
                         hintStyle: const TextStyle(color: Colors.grey),
@@ -220,6 +283,7 @@ class _SignUpScreenState extends State<SignupScreen> {
                           Icons.lock_outline,
                           color: Colors.grey,
                         ),
+                        errorText: passwordError,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
@@ -227,6 +291,10 @@ class _SignUpScreenState extends State<SignupScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
@@ -245,6 +313,11 @@ class _SignUpScreenState extends State<SignupScreen> {
                     TextField(
                       controller: confirmPasswordController,
                       obscureText: true,
+                      onChanged: (_) {
+                        if (confirmPasswordError != null) {
+                          setState(() => confirmPasswordError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: "Pin or Password",
                         hintStyle: const TextStyle(color: Colors.grey),
@@ -252,6 +325,7 @@ class _SignUpScreenState extends State<SignupScreen> {
                           Icons.verified_user_outlined,
                           color: Colors.grey,
                         ),
+                        errorText: confirmPasswordError,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
@@ -259,6 +333,10 @@ class _SignUpScreenState extends State<SignupScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(color: Colors.black12),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
